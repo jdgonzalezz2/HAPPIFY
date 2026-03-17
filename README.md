@@ -8,7 +8,7 @@ Este proyecto fue desarrollado originalmente en **2023** como parte del curso **
 
 ## Vista Previa
 
-![Captura de pantalla de Happify](![alt text](image-1.png))
+![alt text](image-1.png)
 
 ## Características
 
