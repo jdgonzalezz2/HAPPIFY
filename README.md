@@ -1,4 +1,4 @@
-# Happify - Tu Asistente Emocional con IA 🌈✨
+# Happify - Tu Asistente Emocional con IA
 
 Happify es una aplicación web moderna diseñada para ofrecer apoyo emocional y consejos prácticos utilizando la inteligencia artificial de OpenAI. Con una interfaz premium basada en **Glassmorphism**, Happify proporciona un entorno tranquilo y profesional para que los usuarios expresen sus sentimientos.
 
@@ -46,7 +46,7 @@ Abre tu navegador y dirígete a:
 
 ---
 
-## 🛠️ Tecnologías Usadas
+## Tecnologías Usadas
 - **Backend:** Flask (Python)
 - **Frontend:** HTML5, CSS3 (Vanilla), JavaScript
 - **IA:** OpenAI API
