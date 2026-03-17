@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happify | Tu Asistente Emocional</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <div class="nav-logo">
+            <img src="./icons/happify.png" alt="Happify Logo">
+            <span>HAPPIFY</span>
+        </div>
+        <div class="nav-links">
+            <button class="theme-toggle" id="theme-toggle">Modo Oscuro</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div id="chat-window">
+            <main id="chat-messages">
+                <div class="message bot-message">
+                    <img src="./icons/chatbot.png" alt="bot icon"> 
+                    <span>Hola, ¿en qué puedo ayudarte hoy?</span>
+                </div>
+            </main>
+
+            <form id="chat-form">
+                <input
+                    type="text"
+                    id="chat-input"
+                    autocomplete="off"
+                    placeholder="Cuéntame cómo te sientes..."
+                    required
+                />
+                <button type="submit">Enviar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatMessages = document.getElementById('chat-messages');
+        const themeToggle = document.getElementById('theme-toggle');
+
+        // Dark Mode Logic
+        themeToggle.addEventListener('click', () => {
+            const isDark = document.body.hasAttribute('data-theme');
+            if (isDark) {
+                document.body.removeAttribute('data-theme');
+                themeToggle.innerText = 'Modo Oscuro';
+            } else {
+                document.body.setAttribute('data-theme', 'dark');
+                themeToggle.innerText = 'Modo Claro';
+            }
+        });
+
+        function addMessage(text, isUser = false) {
+            const messageDiv = document.createElement('div');
+            // User: Left (user-message), Bot: Right (bot-message)
+            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            
+            const icon = isUser ? './icons/user.png' : './icons/chatbot.png';
+            
+            messageDiv.innerHTML = `
+                <img src="${icon}" alt="${isUser ? 'user' : 'bot'} icon">
+                <span>${text}</span>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            // Limpiar input y añadir mensaje de usuario (Izquierda)
+            chatInput.value = '';
+            addMessage(message, true);
+
+            // Añadir estado de "pensando" (Derecha)
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot-message';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <img src="./icons/chatbot.png" alt="bot icon">
+                <span>Escribiendo...</span>
+            `;
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                const response = await fetch('/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: message })
+                });
+
+                const data = await response.json();
+                
+                // Quitar indicador de carga y añadir respuesta real
+                const indicator = document.getElementById('typing-indicator');
+                if (indicator) indicator.remove();
+                
+                if (data.reply) {
+                    addMessage(data.reply);
+                } else {
+                    addMessage("Lo siento, hubo un error al procesar tu mensaje.");
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                const indicator = document.getElementById('typing-indicator');
+                if (indicator) indicator.remove();
+                addMessage("Lo siento, no puedo conectarme con el servidor ahora mismo.");
+            }
+        });
+    </script>
+</body>
+
+</html>
+
